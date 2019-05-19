@@ -1,5 +1,6 @@
 module ColunaDemos
 
-greet() = print("Hello World!")
+    include("CuttingStock/demo.jl")
+    include("GeneralizedAssignment/demo.jl")
 
 end # module
