@@ -2,3 +2,7 @@ name = "ColunaDemos"
 uuid = "a54e61d4-7723-11e9-2469-af255fcaa246"
 authors = ["Guillaume Marques <guillaume.marques@protonmail.com>"]
 version = "0.1.0"
+
+[deps]
+BlockDecomposition = "6cde8614-403a-11e9-12f1-c10d0f0caca0"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"

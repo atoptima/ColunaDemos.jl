@@ -12,9 +12,10 @@ function Data(nbmachines::Int, nbjobs::Int)
                 Vector{Int}(undef, nbmachines))
 end
 
-function Data(path_file::AbstractString)
+function data(filename::AbstractString)
     data = Int[]
-    open(path_file) do file
+    filepath = string(@__DIR__ , "/instances/" , filename)
+    open(filepath) do file
         for line in eachline(file)
             for pieceofdata in split(line)
                 push!(data, parse(Int, pieceofdata))
