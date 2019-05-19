@@ -1,6 +1,6 @@
 function model(data::Data, optimizer)
-    gap = BlockModel(optimizer)
-
+    gap = BlockModel(optimizer, bridge_constraints = false)
+    
     @axis(M, data.machines)
 
     @variable(gap, x[m in M, j in data.jobs], Bin)
@@ -16,6 +16,6 @@ function model(data::Data, optimizer)
 
     @dantzig_wolfe_decomposition(gap, dec, M)
 
-    return (gap, x)
+    return (gap, dec, x)
 end
 

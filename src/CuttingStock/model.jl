@@ -1,5 +1,5 @@
 function model(d::Data, optimizer)
-    csp = BlockModel(optimizer)
+    csp = BlockModel(optimizer, bridge_constraints = false)
 
     xub = [ min(d.orders[o].demand, floor(d.stocksheetswidth/d.orders[o].width))
             for o in 1:d.nborders ]
@@ -30,5 +30,5 @@ function model(d::Data, optimizer)
     card_bounds_dict = Dict(1 => (0,100))
     #Coluna.set_dantzig_wolfe_cardinality_bounds(csp, card_bounds_dict)
 
-    return (csp, x,  y)
+    return (csp, x, y)
 end
