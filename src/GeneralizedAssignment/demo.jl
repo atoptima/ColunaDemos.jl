@@ -5,4 +5,5 @@ module GeneralizedAssignment
 
     include("data.jl")
     include("model.jl")
+    include("checker.jl")
 end
