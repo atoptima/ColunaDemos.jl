@@ -40,7 +40,7 @@ function show(io::IO, data::DataSmMiLs)
     for i in 1:data.nbitems
         println(io, "> item ", i)
         for p in 1:data.nbperiods
-            println(io, "\t > period ", t, " : demand = ", d(data,i,p), "  setupcost = ", s(data,i,p), "  prodcost = ", p(data, i, p))
+            println(io, "\t > period ", p, " : demand = ", d(data,i,p), "  setupcost = ", s(data,i,p), "  prodcost = ", p(data, i, p))
         end
     end
 end
