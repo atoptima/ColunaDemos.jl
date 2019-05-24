@@ -18,7 +18,7 @@ function model(data::DataSmMiLs, optimizer)
 
     @objective(mils, Min, 
         sum(c(data, i, t) * x[i, t] for i in I, t in T) +
-        sum(f(data, i, t) * y[i, t] for i in I, t in T)
+        sum(s(data, i, t) * y[i, t] for i in I, t in T)
     )
 
     @benders_decomposition(mils, dec, I)
