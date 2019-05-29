@@ -5,8 +5,8 @@ function model(data::DataSmMiLs, optimizer)
     T = 1:data.nbperiods
     D = [sum(d(data, i, t) for t in T) for i in I]
 
-    @variable(mils, x[i in 1:data.nbitems, t in T] >= 0)
-    @variable(mils, y[i in I, t in T] >= 0)
+    @variable(mils, x[i in I, t in T] >= 0)
+    @variable(mils, y[i in 1:data.nbitems, t in T] >= 0)
 
     @constraint(mils, singlemode[t in T], sum(y[i, t] for i in I) <= 1)
 
