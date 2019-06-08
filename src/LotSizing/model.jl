@@ -1,27 +1,55 @@
 function model(data::DataSmMiLs, optimizer)
     mils = BlockModel(optimizer, bridge_constraints = false)
 
-    @axis(I, 1:data.nbitems)
+    @axis(S, 1:data.nbscenarios)
+
+    I = 1:data.nbitems
     T = 1:data.nbperiods
-    D = [sum(d(data, i, t) for t in T) for i in I]
 
-    @variable(mils, x[i in I, t in T] >= 0)
-    @variable(mils, y[i in 1:data.nbitems, t in T] >= 0)
+    D = zeros(Int, data.nbitems, data.nbperiods, data.nbperiods, data.nbscenarios)
+    for i in I
+        for t in T
+            for l in t:data.nbperiods
+                for s in S
+                    f = (l > t ? l-1 : t)
+                    D[i,t,l,s] = D[i,t,f,s] + d(data, i, l, s)
+                end
+            end
+        end
+    end
+    
 
-    @constraint(mils, singlemode[t in T], sum(y[i, t] for i in I) <= 1)
+    @variable(mils, x[i in I, t in T, l in t:data.nbperiods, s in S] >= 0)
 
-    @constraint(mils, setup[i in I, t in T], x[i, t] - D[i] * y[i, t] <= 0)
+    @show x
+    
+    @variable(mils, y[i in I, t in T], Bin)
 
-    @constraint(mils, cov[i in I, t in T], 
-        sum(x[i, τ] for τ in 1:t) >= sum(d(data, i, τ) for τ in 1:t)
-    )
+    @show y
+
+    @constraint(mils, singlemode[t in T],
+                sum(y[i, t] for i in I) <= 1
+                )
+
+    @constraint(mils, setup[i in I, t in T, s in S],
+                sum(x[i, t, l, s] for  l in t:data.nbperiods) -  y[i, t] <= 0
+                )
+
+    @constraint(mils, cov[i in I, t in T, s in S], 
+                sum(x[i, τ, t, s] for τ in 1:t) >= 1
+                )
+
+    last = data.nbperiods-1
+    @constraint(mils, balance[i in I, t in 1:last, s in S],
+                sum(x[i, t, τ, s] for τ in t:data.nbperiods) == sum(x[i, τ, t, s] for τ in 1:t)  
+                )
 
     @objective(mils, Min, 
-        sum(c(data, i, t) * x[i, t] for i in I, t in T) +
-        sum(s(data, i, t) * y[i, t] for i in I, t in T)
-    )
+               sum(c(data, i, t) * D[i, t, l, s] * x[i, t, l, s] for i in I, t in T, l in t:data.nbperiods, s in S) +
+               sum(s(data, i, t) * y[i, t] for i in I, t in T)
+               )
 
-    @benders_decomposition(mils, dec, I)
+    @benders_decomposition(mils, dec, S)    
 
     return mils, dec, x, y
 end
