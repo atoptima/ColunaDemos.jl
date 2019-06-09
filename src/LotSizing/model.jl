@@ -19,7 +19,7 @@ function model(data::DataSmMiLs, optimizer)
     end
     
 
-    @variable(mils, x[i in I, t in T, l in t:data.nbperiods, s in S] >= 0)
+    @variable(mils, x[i in I, t in T, l in T, s in S] >= 0)
 
     @show x
     
@@ -35,13 +35,17 @@ function model(data::DataSmMiLs, optimizer)
                 sum(x[i, t, l, s] for  l in t:data.nbperiods) -  y[i, t] <= 0
                 )
 
-    @constraint(mils, cov[i in I, t in T, s in S], 
-                sum(x[i, τ, t, s] for τ in 1:t) >= 1
+    @constraint(mils, cov[i in I,  s in S], 
+                sum(x[i, 1, t, s] for t in T) >= 1
                 )
 
     last = data.nbperiods-1
     @constraint(mils, balance[i in I, t in 1:last, s in S],
                 sum(x[i, t, τ, s] for τ in t:data.nbperiods) == sum(x[i, τ, t, s] for τ in 1:t)  
+                )
+
+    @constraint(mils, zero[i in I, t in 2:data.nbperiods, s in S],
+                sum(x[i, t, τ, s] for τ in 1:t) <= 0 
                 )
 
     @objective(mils, Min, 
