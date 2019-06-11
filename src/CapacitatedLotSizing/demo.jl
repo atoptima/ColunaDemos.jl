@@ -34,29 +34,13 @@
 # y_{i,t} \in \{0, 1\}, \forall t = 1, \dots, NT
 # x_{i,t}, s{i,t} \geq 0, \forall t = 1, \dots, NT
 ##############################################################################################################
-push!(LOAD_PATH, "modules/")
 
-using JuMP
-using BlockDecomposition
-using Coluna
-using Gurobi, GLPK, CPLEX
+module CapacitatedLotSizing
+    using JuMP, BlockDecomposition
+    using DelimitedFiles
 
-import Data
-import Model
+    import Base.show, Base.print
 
-using Base.CoreLogging, Logging
-# global_logger(ConsoleLogger(stderr, LogLevel(-3)))
-
-appfolder = dirname(@__FILE__)
-
-# Not working with CPLEX
-coluna = JuMP.with_optimizer(Coluna.Optimizer,
-                             default_optimizer = with_optimizer(GLPK.Optimizer))
-
-inst = Data.readData("$appfolder/testSmall")
-
-model, x, y, s, dec = Model.cg_clsp(inst, coluna)
-
-print(model)
-
-optimize!(model)
+    include("data.jl")
+    include("model.jl")
+end

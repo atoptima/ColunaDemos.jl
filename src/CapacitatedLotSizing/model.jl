@@ -1,14 +1,4 @@
-module Model
-
-using JuMP
-using BlockDecomposition
-using Coluna
-using Gurobi
-using Data
-
-export cg_clsp
-
-function cg_clsp(inst::InstanceData, optimizer)
+function model(inst::Data, optimizer)
 
     bigM = Array{Float64}(undef, inst.numItems, inst.numPer)
 
@@ -41,7 +31,5 @@ function cg_clsp(inst::InstanceData, optimizer)
     @dantzig_wolfe_decomposition(clsp, dec, I)
 
     return clsp, x, y, s, dec
-
-end
 
 end

@@ -1,8 +1,4 @@
-module Data
-
-using DelimitedFiles
-
-struct InstanceData
+struct Data
     numItems::Int
     numPer::Int
     cap::Int
@@ -14,10 +10,11 @@ struct InstanceData
     dem
 end
 
-export InstanceData, readData, compute_bigM_coeffs
+function readData(filename::AbstractString)
 
-function readData(instanceFile)
-    instance = readdlm(instanceFile)
+    filepath = string(@__DIR__ , "/instances/" , filename)
+
+    instance = readdlm(filepath)
 
     n = instance[1, 1]  # Get number of items
     m = instance[1, 2]  # Get number of periods
@@ -54,11 +51,11 @@ function readData(instanceFile)
             "\nResource availability (capacity): ", c,
             "\nDemands: ", d)
 
-    instance = InstanceData(n, m, c, p, f, h, a, b, d)
+    instance = Data(n, m, c, p, f, h, a, b, d)
 
 end
 
-function compute_bigM_coeffs(inst::InstanceData)
+function compute_bigM_coeffs(inst::Data)
     bigM_coeffs = Array{Float64}(undef, inst.numItems, inst.numPer)
 
     for item = 1:inst.numItems
@@ -77,6 +74,4 @@ function compute_bigM_coeffs(inst::InstanceData)
     end
 
     return bigM_coeffs
-end
-
 end
