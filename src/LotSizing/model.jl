@@ -17,7 +17,22 @@ function model(data::DataSmMiLs, optimizer)
             end
         end
     end
-    
+
+    @show "compute M"
+    M = zeros(Int, data.nbitems)
+    for i in I
+        for t in T
+            sum = 0
+            for s in S
+                sum += d(data, i, t, s)
+            end
+            if sum > 0
+                M[i] = t
+                break
+            end
+        end
+    end
+    @show M
 
     @variable(mils, x[i in I, t in T, l in T, s in S] >= 0)
 
@@ -31,7 +46,11 @@ function model(data::DataSmMiLs, optimizer)
                 sum(y[i, t] for i in I) <= 1
                 )
 
-    @constraint(mils, setup[i in I, t in T, s in S],
+     @constraint(mils, min[i in I],
+                sum(y[i, t] for  t in 1:M[i])  >= 1
+                )
+
+   @constraint(mils, setup[i in I, t in T, s in S],
                 sum(x[i, t, l, s] for  l in t:data.nbperiods) -  y[i, t] <= 0
                 )
 
