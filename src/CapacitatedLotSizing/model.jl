@@ -6,7 +6,7 @@ function model(inst::Data, optimizer)
 
     clsp = BlockModel(optimizer, bridge_constraints=false)
 
-    @axis(I, 1:inst.numItems, false, lowerbound = 1)
+    @axis(I, 1:inst.numItems)
     T = 1:inst.numPer
     TT = 2:inst.numPer
 
