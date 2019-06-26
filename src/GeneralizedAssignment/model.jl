@@ -1,7 +1,7 @@
 function model(data::Data, optimizer)
     gap = BlockModel(optimizer, bridge_constraints = false)
 
-    @axis(M, data.machines)
+    @axis(M, data.machines, lb = 0)
 
     @variable(gap, x[m in M, j in data.jobs], Bin)
 
@@ -29,7 +29,7 @@ function model_with_penalties(data::Data, optimizer)
 
     max_nb_jobs_not_covered = ceil(0.12 * length(data.jobs))
 
-    @axis(M, data.machines)
+    @axis(M, data.machines, lb = 0)
 
     @variable(gap, x[m in M, j in data.jobs], Bin)
     @variable(gap, y[j in data.jobs], Bin) #equals one if job not assigned 
@@ -55,7 +55,7 @@ function model_max(data::Data, optimizer)
     rewards = data.cost
     capacities = data.capacity
 
-    @axis(M, data.machines)
+    @axis(M, data.machines, lb = 0)
 
     @variable(gap, x[m in M, j in data.jobs], Bin)
     @constraint(gap, cov[j in data.jobs], sum(x[m,j] for m in M) <= 1)
