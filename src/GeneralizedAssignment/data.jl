@@ -7,8 +7,8 @@ mutable struct Data
 end
 
 function Data(nbmachines::Int, nbjobs::Int) 
-    return Data(1:nbmachines, 1:nbjobs, Matrix{Int}(undef, nbmachines,nbjobs),
-                Matrix{Int}(undef, nbmachines, nbjobs), 
+    return Data(1:nbmachines, 1:nbjobs, Matrix{Int}(undef, nbjobs, nbmachines),
+                Matrix{Int}(undef, nbjobs, nbmachines), 
                 Vector{Int}(undef, nbmachines))
 end
 
