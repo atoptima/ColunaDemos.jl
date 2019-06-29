@@ -6,10 +6,6 @@ function print_and_check_sol(data, gap, x)
         for j in data.jobs
             if JuMP.value(x[m,j]) > 0.9999
                 println("job $(j) attached to machine $(m)")
-                if j in assigned
-                    println("Job ", j, " assigned to more than one machine.")
-                    sol_is_ok = false
-                end
                 push!(assigned, j)
                 w += data.weight[j,m]
             end
