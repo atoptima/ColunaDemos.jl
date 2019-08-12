@@ -11,10 +11,11 @@ mutable struct Data
     orders::Vector{Order}
 end
 
-function data(path_file::AbstractString)
+function data(filename::AbstractString)
     datacs = Data("", 0, 1, Array{Order}(undef, 0))
     lines = Array{Any}(undef, 0)
-    open(path_file) do file
+    filepath = string(@__DIR__ , "/instances/" , filename)
+    open(filepath) do file
         for line in eachline(file)
             isdata = (match(r"^[!#]", line)) === nothing # Removing comments
             isdata = isdata && ((match(r"^$", line)) === nothing) # Removing empty lines
