@@ -11,7 +11,7 @@ mutable struct Data
     orders::Vector{Order}
 end
 
-function Data(path_file::AbstractString)
+function data(path_file::AbstractString)
     datacs = Data("", 0, 1, Array{Order}(undef, 0))
     lines = Array{Any}(undef, 0)
     open(path_file) do file
@@ -34,5 +34,5 @@ function Data(path_file::AbstractString)
         order = split(lines[i])
         push!(datacs.orders, Order(i-4, parse(Int, order[1]), parse(Int, order[2])))
     end
-    datacs
+    return datacs
 end  
