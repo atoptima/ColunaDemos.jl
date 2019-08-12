@@ -15,7 +15,7 @@ function model(d::Data, optimizer)
                 sum(x[s, o] * d.orders[o].width for o in 1:d.nborders)
                 - y[s] * d.stocksheetswidth <= 0)
 
-    @objective(csp, Min, y)
+    @objective(csp, Min, sum(y[s] for s in Sheets))
 
     # setting Dantzig Wolfe composition: one subproblem per machine
     @dantzig_wolfe_decomposition(csp, dec, Sheets)
