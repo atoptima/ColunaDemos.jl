@@ -18,7 +18,7 @@ function model(d::Data, optimizer)
     @objective(csp, Min, y)
 
     # setting Dantzig Wolfe composition: one subproblem per machine
-    @dantzig_wolfe_decompostion(csp, dec, Sheets)
+    @dantzig_wolfe_decomposition(csp, dec, Sheets)
 
     return csp, x, y, dec
 end
