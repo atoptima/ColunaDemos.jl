@@ -4,31 +4,21 @@ function model(d::Data, optimizer)
     xub = [ min(d.orders[o].demand, floor(d.stocksheetswidth/d.orders[o].width))
             for o in 1:d.nborders ]
 
-    @variable(csp, 0 <= x[o in 1:d.nborders] <= xub[o], Int)
+    @axis(Sheets, 1:100, Identical)
 
-    @variable(csp, y, Bin)
+    @variable(csp, 0 <= x[s in Sheets, o in 1:d.nborders] <= xub[o], Int)
+    @variable(csp, y[s in Sheets], Bin)
 
-    @constraint(csp, cov[o in 1:d.nborders], x[o] >= d.orders[o].demand)
+    @constraint(csp, cov[o in 1:d.nborders], sum(x[s, o] for s in Sheets) >= d.orders[o].demand)
 
-    @constraint(csp, knp,
-                sum(x[o] * d.orders[o].width for o in 1:d.nborders)
-                - y * d.stocksheetswidth <= 0)
+    @constraint(csp, knp[s in Sheets],
+                sum(x[s, o] * d.orders[o].width for o in 1:d.nborders)
+                - y[s] * d.stocksheetswidth <= 0)
 
-    @objective(csp, Min, y)
+    @objective(csp, Min, sum(y[s] for s in Sheets))
 
     # setting Dantzig Wolfe composition: one subproblem per machine
-    function csp_decomp_func(name, key)
-        if name == :cov
-            return 0
-        else
-            return 1
-        end
-    end
-    #Coluna.set_dantzig_wolfe_decompostion(csp, csp_decomp_func)
+    @dantzig_wolfe_decomposition(csp, dec, Sheets)
 
-    # setting pricing cardinality bounds
-    card_bounds_dict = Dict(1 => (0,100))
-    #Coluna.set_dantzig_wolfe_cardinality_bounds(csp, card_bounds_dict)
-
-    return (csp, x, y)
+    return csp, x, y, dec
 end

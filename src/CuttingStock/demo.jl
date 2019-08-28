@@ -1,4 +1,4 @@
-module  CuttingStock
+module CuttingStock
     using JuMP, BlockDecomposition
     
     import Base.show, Base.print
