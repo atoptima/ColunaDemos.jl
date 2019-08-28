@@ -34,11 +34,11 @@ function model(data::DataSmMiLs, optimizer)
     end
     @show M
 
-    @variable(mils, x[i in I, t in T, l in T, s in S] >= 0)
+    @variable(mils, 0<= x[i in I, t in T, l in T, s in S] <= 1)
 
     @show x
     
-    @variable(mils, 0 <= y[i in I, t in T] <= 1)
+    @variable(mils, y[i in I, t in T], Bin)
 
     @show y
 
@@ -46,11 +46,11 @@ function model(data::DataSmMiLs, optimizer)
                 sum(y[i, t] for i in I) <= 1
                 )
 
-     @constraint(mils, min[i in I],
+    @constraint(mils, baseCut[i in I],
                 sum(y[i, t] for  t in 1:M[i])  >= 1
                 )
 
-   @constraint(mils, setup[i in I, t in T, s in S],
+    @constraint(mils, setup[i in I, t in T, s in S],
                 sum(x[i, t, l, s] for  l in t:data.nbperiods) -  y[i, t] <= 0
                 )
 
@@ -67,11 +67,14 @@ function model(data::DataSmMiLs, optimizer)
                 sum(x[i, t, τ, s] for τ in 1:t-1) <= 0 
                 )
 
-    @objective(mils, Min, 
+    obj = @objective(mils, Min, 
                sum(c(data, i, t) * D[i, t, l, s] * x[i, t, l, s] for i in I, t in T, l in t:data.nbperiods, s in S) +
                sum(s(data, i, t) * y[i, t] for i in I, t in T)
                )
 
+    
+    @show obj
+    
     @benders_decomposition(mils, dec, S)    
 
     return mils, dec, x, y

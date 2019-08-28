@@ -8,6 +8,34 @@ mutable struct DataSmMiLs
     demand::Array{Int,3}
 end
 
+
+function d(data::DataSmMiLs, item::Int, period::Int, scenario::Int)
+    return data.demand[item, period, scenario]
+end
+
+function s(data::DataSmMiLs, item::Int, period::Int)
+    return data.setupcost[item, period]
+end
+
+function c(data::DataSmMiLs, item::Int, period::Int)
+    return data.prodcost[item, period]
+end
+
+function print(data::DataSmMiLs)
+    println( "nbperiods = ", data.nbperiods, "  nbitems = ", data.nbitems)
+    for i in 1:data.nbitems
+        println("> item ", i)
+        for t in 1:data.nbperiods
+            println( "\t > period ", t,
+                     " : demand = ", d(data,i, t, 1),
+                     "-" , d(data,i, t, 2),
+                     "  setupcost = ", s(data, i, t),
+                     "  prodcost = ", c(data, i, t))
+        end
+    end
+    return
+end
+
 function data(filename::AbstractString)
     data = Int[]
     filepath = string(@__DIR__ , "/instances/" , filename)
@@ -30,13 +58,10 @@ function data(filename::AbstractString)
 
     # demand setupcost prodcost demand2
     demand = zeros(Int, nbitems, nbperiods, nbscenarios)
-    @show demand
     
     setupcost = zeros(Int, nbitems, nbperiods)
-    @show setupcost
     
     prodcost = zeros(Int, nbitems, nbperiods)
-    @show prodcost
     
     for t = 1:nbperiods
         for i = 1:nbitems
@@ -59,33 +84,22 @@ function data(filename::AbstractString)
     @show demand
     @show setupcost
     @show prodcost
-    
+
+    data = DataSmMiLs(nbitems, nbperiods, nbscenarios, setupcost, prodcost, demand)
+    #io = IOBuffer()
+    print(data)
 
     # demand setupcost prodcost demand2
-    return DataSmMiLs(nbitems, nbperiods, nbscenarios, setupcost, prodcost, demand)
+    return data
 end
 
-function d(data::DataSmMiLs, item::Int, period::Int, scenario::Int)
-    return data.demand[item, period, scenario]
-    #return data.data[1, (period - 1) * data.nbitems * * nbscenarios  + item]
-end
 
-function s(data::DataSmMiLs, item::Int, period::Int)
-    return data.setupcost[item, period]
-    #[2, (period - 1) * data.nbitems + item]
-end
-
-function c(data::DataSmMiLs, item::Int, period::Int)
-    return data.prodcost[item, period]
-    #return data.data[3, (period - 1) * data.nbitems + item]
-end
-
-function show(io::IO, data::DataSmMiLs)
+#==function show(io::IO, data::DataSmMiLs)
     println(io, "nbperiods = ", data.nbperiods, "  nbitems = ", data.nbitems)
     for i in 1:data.nbitems
         println(io, "> item ", i)
         for p in 1:data.nbperiods
-            println(io, "\t > period ", p, " : demand = ", d(data,i,p), "  setupcost = ", s(data,i,p), "  prodcost = ", p(data, i, p))
+            println(io, "\t > period ", p, " : demand = ", d(data,i, p, 1), "-" , d(data,i, p, 2), "  setupcost = ", s(data,i,p), "  prodcost = ", p(data, i, p))
         end
     end
-end
+end==#
