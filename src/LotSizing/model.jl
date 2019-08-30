@@ -54,8 +54,8 @@ function model(data::DataSmMiLs, optimizer)
                 sum(x[i, t, l, s] for  l in t:data.nbperiods) -  y[i, t] <= 0
                 )
 
-    @constraint(mils, cov[i in I,  s in S], 
-                sum(x[i, 1, t, s] for t in T) >= 1
+    @constraint(mils, cov[i in I,   s in S], 
+                sum(x[i, t, l, s] for t in T, l in T) >= 1
                 )
 
     last = data.nbperiods-1
