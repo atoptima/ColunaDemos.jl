@@ -34,7 +34,7 @@ function model(data::DataSmMiLs, optimizer)
     end
     @show M
 
-    @variable(mils, 0<= x[i in I, t in T, l in T, s in S] <= 1)
+    @variable(mils, 0<= x[i in I, t in T, l in t:data.nbperiods, s in S] <= 1)
 
     @show x
     
