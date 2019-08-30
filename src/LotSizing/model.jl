@@ -46,9 +46,9 @@ function model(data::DataSmMiLs, optimizer)
                 sum(y[i, t] for i in I) <= 1
                 )
 
-    @constraint(mils, baseCut[i in I],
+    #== @constraint(mils, baseCut[i in I],
                 sum(y[i, t] for  t in 1:M[i])  >= 1
-                )
+                ) ==#
 
     @constraint(mils, setup[i in I, t in T, s in S],
                 sum(x[i, t, l, s] for  l in t:data.nbperiods) -  y[i, t] <= 0
