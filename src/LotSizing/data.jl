@@ -79,7 +79,7 @@ function data(filename::AbstractString)
     end
 
     nbitems = 2
-    nbperiods = 5
+    nbperiods = 3
     
     @show demand
     @show setupcost
