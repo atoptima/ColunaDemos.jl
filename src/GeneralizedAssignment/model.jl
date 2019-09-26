@@ -58,7 +58,7 @@ function model_max(data::Data, optimizer)
     rewards = data.cost
     capacities = data.capacity
 
-    @axis(M, data.machines, lb = 0)
+    @axis(M, data.machines)
 
     @variable(gap, x[m in M, j in data.jobs], Bin)
     @constraint(gap, cov[j in data.jobs], sum(x[m,j] for m in M) <= 1)
@@ -69,7 +69,9 @@ function model_max(data::Data, optimizer)
     @objective(gap, Max, sum(rewards[j,m]*x[m,j] for m in M, j in data.jobs))
 
     @dantzig_wolfe_decomposition(gap, dec, M)
-
+    subproblems = BlockDecomposition.getsubproblems(dec)
+    specify!(subproblems, lm = 0)
+    
     return gap, x, dec
 end
 
