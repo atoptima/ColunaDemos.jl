@@ -1,7 +1,7 @@
 function model(data::Data, optimizer)
     gap = BlockModel(optimizer, bridge_constraints = false)
 
-    @axis(M, data.machines, lb = 0)
+    @axis(M, data.machines)
 
     @variable(gap, x[m in M, j in data.jobs], Bin)
 
@@ -15,7 +15,8 @@ function model(data::Data, optimizer)
             sum(data.cost[j,m]*x[m,j] for m in M, j in data.jobs))
 
     @dantzig_wolfe_decomposition(gap, dec, M)
-
+    subproblems = BlockDecomposition.getsubproblems(dec)
+    specify!(subproblems, lm = 0)
     return gap, x, dec
 end
 
@@ -29,7 +30,7 @@ function model_with_penalties(data::Data, optimizer)
 
     max_nb_jobs_not_covered = ceil(0.12 * length(data.jobs))
 
-    @axis(M, data.machines, lb = 0)
+    @axis(M, data.machines)
 
     @variable(gap, x[m in M, j in data.jobs], Bin)
     @variable(gap, y[j in data.jobs], Bin) #equals one if job not assigned 
@@ -45,6 +46,8 @@ function model_with_penalties(data::Data, optimizer)
         sum(penalties[j]*y[j] for j in data.jobs))
 
     @dantzig_wolfe_decomposition(gap, dec, M)
+    subproblems = BlockDecomposition.getsubproblems(dec)
+    specify!(subproblems, lm = 0)
 
     return gap, x, y, dec
 end

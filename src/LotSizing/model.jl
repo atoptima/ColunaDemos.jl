@@ -32,15 +32,10 @@ function model(data::DataSmMiLs, optimizer)
             end
         end
     end
-    @show M
 
     @variable(mils, 0<= x[i in I, t in T, l in T, s in S] <= 1)
-
-    @show x
     
     @variable(mils, y[i in I, t in T], Bin)
-
-    @show y
 
     @constraint(mils, singlemode[t in T],
                 sum(y[i, t] for i in I) <= 1
@@ -72,8 +67,6 @@ function model(data::DataSmMiLs, optimizer)
                sum(s(data, i, t) * y[i, t] for i in I, t in T)
                )
 
-    
-    @show obj
     
     @benders_decomposition(mils, dec, S)    
 
