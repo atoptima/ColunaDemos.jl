@@ -1,26 +1,26 @@
-function model(data::DataFl, solver)
-    fl = BlockModel(solver = solver)
+function model(data::DataFl, , optimizer)
+    fl = BlockModel(optimizer, bridge_constraints = false)
+
+    
+    I = 1:data.nbcustomers
+    J = 1:data.nbfacilities 
+
+    @variable(fl, 0 <= x[i in I, j in J] <= 1)
+    
+    @variable(fl, y[j in J], Bin)
   
-    @variable(fl, 0 <= x[i in data.customers, j in data.factories] <= 1 )
-    @variable(fl, y[j in data.factories], Bin)
+    @constraint(fl, cov[i in I],
+                  sum( x[i, j] for j in J ) >= 1)
   
-    @constraint(fl, cov[i in data.customers],
-                  sum( x[i, j] for j in data.factories ) >= 1)
-  
-    @constraint(fl, knp[j in data.factories],
-                  sum( x[i, j] for i in data.customers ) <= y[j] * data.capacities[j])
+    @constraint(fl, knp[j in J],
+                  sum( x[i, j] for i in I ) <= y[j] * data.capacities[j])
   
     @objective(fl, Min,
-                  sum( data.costs[i,j] * x[i, j] for j in data.factories, i in data.customers)
-                  + sum( data.fixedcosts[j] * y[j] for j in data.factories) )
+                  sum( data.costs[i,j] * x[i, j] for i in I, j in J)
+                  + sum( data.fixedcosts[j] * y[j] for j in J) )
   
-    function benders_fct(varname::Symbol, varid::Tuple)
-      if varname == :x
-        return (:B_SP, 0)
-      else
-        return (:B_MASTER, 0)
-      end
-    end
-    add_Benders_decomposition(fl, benders_fct)
-    return (fl, x, y)
+   @benders_decomposition(fl, dec, J)    
+
+    return fl, dec, x, y
+
 end
