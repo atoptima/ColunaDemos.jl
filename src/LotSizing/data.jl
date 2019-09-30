@@ -9,7 +9,7 @@ mutable struct DataSmMiLs
 end
 
 
-function d(data::DataSmMiLs, item::Int, period::Int, scenario::Int)
+function d(data::DataSmMiLs, item::Int, period::Int, scenario)
     return data.demand[item, period, scenario]
 end
 
@@ -54,8 +54,6 @@ function data(filename::AbstractString)
     nbscenarios = data[3]
     offset = 4
 
-    @show nbitems nbperiods nbscenarios 
-
     # demand setupcost prodcost demand2
     demand = zeros(Int, nbitems, nbperiods, nbscenarios)
     
@@ -80,10 +78,6 @@ function data(filename::AbstractString)
 
     nbitems = 2
     nbperiods = 3
-    
-    @show demand
-    @show setupcost
-    @show prodcost
 
     data = DataSmMiLs(nbitems, nbperiods, nbscenarios, setupcost, prodcost, demand)
     #io = IOBuffer()
