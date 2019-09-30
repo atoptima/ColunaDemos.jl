@@ -18,7 +18,6 @@ function model(data::DataSmMiLs, optimizer)
         end
     end
 
-    @show "compute M"
     M = zeros(Int, data.nbitems)
     for i in I
         for t in T
@@ -67,8 +66,8 @@ function model(data::DataSmMiLs, optimizer)
                sum(s(data, i, t) * y[i, t] for i in I, t in T)
                )
 
-    
     @benders_decomposition(mils, dec, S)    
 
     return mils, dec, x, y
 end
+]
