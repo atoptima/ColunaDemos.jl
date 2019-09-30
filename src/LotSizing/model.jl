@@ -70,4 +70,3 @@ function model(data::DataSmMiLs, optimizer)
 
     return mils, dec, x, y
 end
-]
