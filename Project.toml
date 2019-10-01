@@ -1,6 +1,6 @@
 name = "ColunaDemos"
 uuid = "a54e61d4-7723-11e9-2469-af255fcaa246"
-authors = ["Guillaume Marques <guillaume.marques@protonmail.com>"]
+authors = ["Guillaume Marques", "Vitor Nesello", "François Vanderbeck"]
 version = "0.1.0"
 
 [deps]
