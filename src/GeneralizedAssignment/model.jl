@@ -65,7 +65,7 @@ function model_with_penalty(data::Data, optimizer)
     @constraint(gap, cov[j in data.jobs], sum(x[m,j] for m in M) + y[j] >= 1)
 
     @constraint(gap, knp[m in M],
-        sum(data.weight[j,m]*x[m,j] for j in data.jobs) <= capacities[m])
+        sum(data.weight[j,m]*x[m,j] for j in data.jobs) <= data.capacity[m])
 
     @objective(gap, Min, 
         sum(data.cost[j,m]*x[m,j] for m in M, j in data.jobs) + 
