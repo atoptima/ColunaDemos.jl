@@ -52,6 +52,32 @@ function model_with_penalties(data::Data, optimizer)
     return gap, x, y, dec
 end
 
+function model_with_penalty(data::Data, optimizer)
+    gap = BlockModel(optimizer, bridge_constraints = false)
+
+    penalty = 10000
+
+    @axis(M, data.machines)
+
+    @variable(gap, x[m in M, j in data.jobs], Bin)
+    @variable(gap, y[j in data.jobs], Bin) #equals one if job not assigned 
+
+    @constraint(gap, cov[j in data.jobs], sum(x[m,j] for m in M) + y[j] >= 1)
+
+    @constraint(gap, knp[m in M],
+        sum(data.weight[j,m]*x[m,j] for j in data.jobs) <= capacities[m])
+
+    @objective(gap, Min, 
+        sum(data.cost[j,m]*x[m,j] for m in M, j in data.jobs) + 
+        sum(penalty*y[j] for j in data.jobs))
+
+    @dantzig_wolfe_decomposition(gap, dec, M)
+    subproblems = BlockDecomposition.getsubproblems(dec)
+    specify!(subproblems, lower_multiplicity = 0)
+
+    return gap, x, y, dec
+end
+
 function model_max(data::Data, optimizer)
     gap = BlockModel(optimizer, bridge_constraints = false)
 
