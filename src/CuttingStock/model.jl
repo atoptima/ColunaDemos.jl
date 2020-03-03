@@ -22,7 +22,7 @@ function model(d::Data, optimizer)
     # setting Dantzig Wolfe composition: one subproblem per machine
     @dantzig_wolfe_decomposition(csp, dec, SheetTypes)
     subproblems = BlockDecomposition.getsubproblems(dec)
-    specify!(subproblems, lower_multiplicity = 0, upper_multiplicity = 100)
+    specify!.(subproblems, lower_multiplicity = 0, upper_multiplicity = 100)
 
     return csp, x, y, dec
 end

@@ -16,7 +16,7 @@ function model(data::Data, optimizer)
 
     @dantzig_wolfe_decomposition(gap, dec, M)
     subproblems = BlockDecomposition.getsubproblems(dec)
-    specify!(subproblems, lower_multiplicity = 0)
+    specify!.(subproblems, lower_multiplicity = 0)
     return gap, x, dec
 end
 
@@ -47,7 +47,7 @@ function model_with_penalties(data::Data, optimizer)
 
     @dantzig_wolfe_decomposition(gap, dec, M)
     subproblems = BlockDecomposition.getsubproblems(dec)
-    specify!(subproblems, lower_multiplicity = 0)
+    specify!.(subproblems, lower_multiplicity = 0)
 
     return gap, x, y, dec
 end
@@ -73,7 +73,7 @@ function model_with_penalty(data::Data, optimizer)
 
     @dantzig_wolfe_decomposition(gap, dec, M)
     subproblems = BlockDecomposition.getsubproblems(dec)
-    specify!(subproblems, lower_multiplicity = 0)
+    specify!.(subproblems, lower_multiplicity = 0)
 
     return gap, x, y, dec
 end
@@ -96,7 +96,7 @@ function model_max(data::Data, optimizer)
 
     @dantzig_wolfe_decomposition(gap, dec, M)
     subproblems = BlockDecomposition.getsubproblems(dec)
-    specify!(subproblems, lower_multiplicity = 0)
+    specify!.(subproblems, lower_multiplicity = 0)
     
     return gap, x, dec
 end
