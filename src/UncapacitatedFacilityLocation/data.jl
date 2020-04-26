@@ -29,7 +29,7 @@ function data(filename::AbstractString)
 
     offset = 3
     
-    for f in data.facilities
+    for f in dataufl.facilities
         dataufl.openingcost[f] = data[offset + 1]
         dataufl.linkingcost[f, :] = data[offset + 2 : offset + 2 + nbcities]
         offset += 2 + nbcities
