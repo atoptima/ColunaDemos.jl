@@ -14,7 +14,7 @@ function data(filename::AbstractString)
     filepath = string(@__DIR__ , "/instances/" , filename)
     open(filepath) do file
         for line in eachline(file)
-            match(r"^FILE", line) === nothing && continue #  jump file name
+            match(r"^FILE", line) != nothing && continue #  jump file name
             for pieceofdata in split(line)
                 push!(data, parse(Int, pieceofdata))
             end
