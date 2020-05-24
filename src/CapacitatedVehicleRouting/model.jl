@@ -46,8 +46,8 @@ function model(data::Data, optimizer)
     end
 
     function route_pricing_callback(cbdata)
-        spid = callback_spid(cbdata, cvrp)
-        costs = [callback_reduced_cost(cbdata, x[spid, e]) for e in E]
+        spid = BlockDecomposition.callback_spid(cbdata, cvrp)
+        costs = [BlockDecomposition.callback_reduced_cost(cbdata, x[spid, e]) for e in E]
 
         function curcost(i, j)
             ind = (dim + 2 - i) % (dim + 1) + j - i
