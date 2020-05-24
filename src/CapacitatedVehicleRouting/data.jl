@@ -12,18 +12,20 @@ function data(filename::AbstractString)
     open(filepath) do file
         for line in eachline(file)
             m = match(r"CAPACITY : (\d+)", line)
-            if length(m.captures) == 1
-                capacity = m.captures[1]
+            if m !== nothing && length(m.captures) == 1
+                capacity = parse(Int, m.captures[1])
                 continue
             end
             m = match(r"^(\d+) (\d+)", line)
-            if length(m.captures) == 2
-                push!(demands, m.captures[2])
+            if m !== nothing && length(m.captures) == 2
+                push!(demands, parse(Int, m.captures[2]))
                 continue
             end
             m = match(r"^ (\d+) (\d+) (\d+)", line)
-            if length(m.captures) == 3
-                push!(coords, Pair{Int,Int}(m.captures[2], m.captures[3]))
+            if m !== nothing && length(m.captures) == 3
+                x = parse(Int, m.captures[2])
+                y = parse(Int, m.captures[3])
+                push!(coords, Pair{Int,Int}(x, y))
                 continue
             end
             println(line)
