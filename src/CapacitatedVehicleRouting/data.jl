@@ -34,7 +34,11 @@ function data(filename::AbstractString)
 end
 
 function edges(data::Data)
-    return [(i, j) for i in 1:length(data.locations) - 1, j in i + 1:length(data.locations)]
+    edges = Tuple{Int, Int}()
+    for i in 1:length(data.locations) - 1, j in i + 1:length(data.locations)
+        push!(edges, (i, j))
+    end
+    return edges
 end
 
 function incidents(data::Data, c)
