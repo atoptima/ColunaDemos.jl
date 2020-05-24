@@ -50,7 +50,10 @@ function model(data::Data, optimizer)
         costs = [BlockDecomposition.callback_reduced_cost(cbdata, x[spid, e]) for e in E]
 
         function curcost(i, j)
-            ind = (dim + 2 - i) % (dim + 1) + j - i
+            i2, _ = nodes_to_desc[i]
+            j2, _ = nodes_to_desc[j]
+            i2, j2 = i2 < j2 ? (i2, j2) : (j2, i2)
+            ind = (dim + 2 - i2) % (dim + 1) + j2 - i2
             return costs[ind]
         end
 
