@@ -28,8 +28,20 @@ function data(filename::AbstractString)
                 push!(coords, Pair{Int,Int}(x, y))
                 continue
             end
-            println(line)
         end
     end
     return Data(coords, demands, capacity)
+end
+
+function edges(data::Data)
+    return [(i,j) for i in 1:length(data.locations) - 1, j in i + 1:length(data.locations)]
+end
+
+function dist(data, e)
+    i, j = e
+    x1 = data.locations[i].first
+    x2 = data.locations[j].first
+    y1 = data.locations[i].second
+    y2 = data.locations[j].second
+    return sqrt((x1 - x2)^2 + (y1 - y2)^2)
 end

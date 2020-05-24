@@ -3,6 +3,8 @@ function model(d::Data, optimizer)
 
     @axis(VehicleTypes, [1])
 
+    E = edges(data)
+
     @variable(cvrp, 0 <= x[v in VehicleTypes, e in E] <= 2, Int)
     @constraint(cvrp, cov[c in C],
         sum(x[v, e] for e in incidents(d, c), v in VehicleTypes) == 2
