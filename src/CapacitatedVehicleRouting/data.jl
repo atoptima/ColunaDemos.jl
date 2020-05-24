@@ -34,7 +34,7 @@ function data(filename::AbstractString)
 end
 
 function edges(data::Data)
-    return [(i,j) for i in 1:length(data.locations) - 1, j in i + 1:length(data.locations)]
+    return [(i, j) for i in 1:length(data.locations) - 1, j in i + 1:length(data.locations)]
 end
 
 function dist(data, e)
@@ -45,3 +45,7 @@ function dist(data, e)
     y2 = data.locations[j].second
     return sqrt((x1 - x2)^2 + (y1 - y2)^2)
 end
+
+customers(data::Data) = 2:length(data.locations)
+demand(data::Data, c) = data.demands[c]
+capacity(data::Data) = data.capacity
