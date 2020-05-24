@@ -4,7 +4,7 @@ struct Data
     capacity::Int
 end
 
-function readData(filename::AbstractString)
+function data(filename::AbstractString)
     capacity = 0
     coords = Pair{Int,Int}[]
     demands = Int[]
