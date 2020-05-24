@@ -61,7 +61,7 @@ function model(data::Data, optimizer)
     end
 
     subproblems = getsubproblems(dec)
-    specify!(subproblems[1], lower_multiplicity = 0, upper_multiplicity = 20)
+    specify!(subproblems[1], lower_multiplicity = 0, upper_multiplicity = 20, solver = route_pricing_callback)
 
     return cvrp, x, dec
 end
