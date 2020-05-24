@@ -42,7 +42,7 @@ function incidents(data::Data, c)
     for c2 in 1:length(data.locations)
         if c < c2
             push!(edges, (c, c2))
-        else if c > c2
+        elseif c > c2
             push!(edges, (c2, c))
         end
     end
