@@ -5,6 +5,7 @@ function model(data::Data, optimizer)
 
     E = edges(data)
     C = customers(data)
+    dim = length(data.locations)
 
     @variable(cvrp, 0 <= x[v in VehicleTypes, e in E] <= 2, Int)
     @constraint(cvrp, cov[c in C],
@@ -42,6 +43,21 @@ function model(data::Data, optimizer)
             end
         end
         add_edge!(graph, tail, target)
+    end
+
+    function route_pricing_callback(cbdata)
+        spid = callback_spid(cbdata, cvrp)
+        costs = [callback_reduced_cost(cbdata, x[spid, e]) for e in E]
+
+        function curcost(i, j)
+            ind = (dim + 2 - i) % (dim + 1) + j - i
+            return costs[ind]
+        end
+
+        costmx = [curcost(i, j) for i in 1:length(nodes_to_desc), j in 1:length(nodes_to_desc)]
+        pstate = dijkstra_shortest_path(graph, [source], distmx = costmx)
+        @show pstate
+        exit()
     end
 
     subproblems = getsubproblems(dec)
