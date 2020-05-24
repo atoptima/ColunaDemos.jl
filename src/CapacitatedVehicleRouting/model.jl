@@ -53,7 +53,9 @@ function model(data::Data, optimizer)
             i2, _ = nodes_to_desc[i]
             j2, _ = nodes_to_desc[j]
             i2, j2 = i2 < j2 ? (i2, j2) : (j2, i2)
-            ind = (dim + 2 - i2) % (dim + 1) + j2 - i2
+            @show dim, i, j, i2, j2
+            ind = sum((dim + 2 - k) % (dim + 1) for k = 1:i2) + j2 - i2
+            @show ind
             return costs[ind]
         end
 
