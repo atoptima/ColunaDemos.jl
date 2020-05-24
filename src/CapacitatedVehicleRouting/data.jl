@@ -37,6 +37,18 @@ function edges(data::Data)
     return [(i, j) for i in 1:length(data.locations) - 1, j in i + 1:length(data.locations)]
 end
 
+function incidents(data::Data, c)
+    edges = Tuple{Int, Int}[]
+    for c2 in 1:length(data.locations)
+        if c < c2
+            push!(edges, (c, c2))
+        else if c > c2
+            push!(edges, (c2, c))
+        end
+    end
+    return edges
+end
+
 function dist(data, e)
     i, j = e
     x1 = data.locations[i].first
