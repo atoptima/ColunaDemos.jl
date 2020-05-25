@@ -59,8 +59,10 @@ function model(data::Data, optimizer)
             @show ind
             return costs[ind]
         end
-
-        costmx = [curcost(i, j) for i in 1:length(nodes_to_desc), j in 1:length(nodes_to_desc)]
+        costmx = matrix(Inf, length(nodes_to_desc), length(nodes_to_desc))
+        for (i,j) in edges(graph)
+            costmx[i,j] = curcost(i, j)
+        end
         pstate = dijkstra_shortest_path(graph, [source], distmx = costmx, allpaths = true)
         @show pstate
         exit()
