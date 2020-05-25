@@ -3,7 +3,7 @@ function model(data::Data, optimizer)
 
     @axis(VehicleTypes, [1])
 
-    E = edges(data)
+    E = instance_edges(data)
     C = customers(data)
     dim = length(data.locations)
 

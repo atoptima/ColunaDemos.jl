@@ -33,7 +33,7 @@ function data(filename::AbstractString)
     return Data(coords, demands, capacity)
 end
 
-function edges(data::Data)
+function instance_edges(data::Data)
     edges = Tuple{Int, Int}[]
     for i in 1:length(data.locations) - 1, j in i + 1:length(data.locations)
         push!(edges, (i, j))
