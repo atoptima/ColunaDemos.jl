@@ -50,18 +50,18 @@ function model(data::Data, optimizer)
         costs = [BlockDecomposition.callback_reduced_cost(cbdata, x[spid, e]) for e in E]
 
         function curcost(i, j)
-            i == j && return Inf
             i2, _ = nodes_to_desc[i]
             j2, _ = nodes_to_desc[j]
+            i2 == j2 && return Inf
             i2, j2 = i2 < j2 ? (i2, j2) : (j2, i2)
-            @show dim, i, j, i2, j2
+            #@show dim, i, j, i2, j2
             ind = sum((dim + 2 - k) % (dim + 1) for k = 1:i2) + j2 - i2
-            @show ind
+            #@show ind
             return costs[ind]
         end
 
         costmx = [curcost(i, j) for i in 1:length(nodes_to_desc), j in 1:length(nodes_to_desc)]
-        pstate = dijkstra_shortest_path(graph, [source], distmx = costmx)
+        pstate = dijkstra_shortest_path(graph, [source], distmx = costmx, allpaths = true)
         @show pstate
         exit()
     end
