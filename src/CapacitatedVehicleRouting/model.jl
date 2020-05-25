@@ -54,25 +54,42 @@ function model(data::Data, optimizer)
             j2, _ = nodes_to_desc[j]
             i2 == j2 && return Inf
             i2, j2 = i2 < j2 ? (i2, j2) : (j2, i2)
-            ind = sum((dim + 2 - k) % (dim + 1) for k = 1:i2) + j2 - i2
-            if ind < 0 || ind > length(costs)
-                @show dim, i, j, i2, j2
-                @show ind
-                @show length(costs)
-                @show length(nodes_to_desc)
-            end
+            ind = sum((dim + 1 - k) % dim for k = 1:i2) + j2 - i2
             return costs[ind]
         end
         costmx = fill(Inf, length(nodes_to_desc), length(nodes_to_desc))
         for e in edges(graph)
             costmx[e.src,e.dst] = curcost(e.src, e.dst)
         end
-        pstate = dijkstra_shortest_path(graph, [source], distmx = costmx, allpaths = true)
-        @show pstate
-        exit()
+        pstate = dijkstra_shortest_paths(graph, source, costmx)
+
+        prevvertex = target
+        curvertex = pstate.parents[target]
+        sol = Dict{Tuple{Int, Int}, Int}()
+        prevloc = source
+        curloc = 0
+        while curvertex != 0
+            curloc, _ = nodes_to_desc[curvertex]
+            edge = prevloc < curloc ? (prevloc, curloc) : (curloc, prevloc)
+            sol[edge] = get(sol, edge, 0) + 1
+            prevvertex = curvertex
+            prevloc = curloc
+            curvertex = pstate.parents[curvertex]
+        end
+        # Create the solution (send only variables with non-zero values)
+        solvars = JuMP.VariableRef[]
+        solvals = Float64[]
+        for (edge, val) in sol
+            push!(solvars, x[spid, edge])
+            push!(solvals, val)
+        end
+
+        # Submit the solution to the subproblem to Coluna
+        MOI.submit(cvrp, BD.PricingSolution(cbdata), pstate.dists[target], solvars, solvals)
     end
 
     subproblems = getsubproblems(dec)
+    # only one subproblem
     specify!(subproblems[1], lower_multiplicity = 0, upper_multiplicity = 20, solver = route_pricing_callback)
 
     return cvrp, x, dec
