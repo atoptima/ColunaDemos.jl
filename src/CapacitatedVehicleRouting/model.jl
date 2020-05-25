@@ -54,12 +54,16 @@ function model(data::Data, optimizer)
             j2, _ = nodes_to_desc[j]
             i2 == j2 && return Inf
             i2, j2 = i2 < j2 ? (i2, j2) : (j2, i2)
-            @show dim, i, j, i2, j2
             ind = sum((dim + 2 - k) % (dim + 1) for k = 1:i2) + j2 - i2
-            @show ind
+            if ind < 0 || ind > length(costs)
+                @show dim, i, j, i2, j2
+                @show ind
+                @show length(costs)
+                @show length(nodes_to_desc)
+            end
             return costs[ind]
         end
-        costmx = matrix(Inf, length(nodes_to_desc), length(nodes_to_desc))
+        costmx = fill(Inf, length(nodes_to_desc), length(nodes_to_desc))
         for (i,j) in edges(graph)
             costmx[i,j] = curcost(i, j)
         end
