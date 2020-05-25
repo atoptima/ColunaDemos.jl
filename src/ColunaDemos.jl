@@ -5,4 +5,6 @@ module ColunaDemos
     include("LotSizing/demo.jl")
     include("CapacitatedLotSizing/demo.jl")
     include("UncapacitatedFacilityLocation/demo.jl")
+    include("CapacitatedVehicleRouting/demo.jl")
+
 end # module
