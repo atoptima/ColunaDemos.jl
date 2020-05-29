@@ -1,5 +1,5 @@
 module CapacitatedVehicleRouting
-    using JuMP, BlockDecomposition, LightGraphs, MathOptInterface
+    using JuMP, BlockDecomposition, LightGraphs, MathOptInterface, GLPK
     const MOI = MathOptInterface
     const BD = BlockDecomposition
 
