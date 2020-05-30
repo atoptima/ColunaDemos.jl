@@ -5,6 +5,7 @@ function model(data::Data, optimizer)
 
     E = instance_edges(data)
     C = customers(data)
+    Q = capacity(data)
     dim = length(data.locations)
 
     @variable(cvrp, 0 <= x[v in VehicleTypes, e in E] <= 2, Int)
@@ -16,23 +17,25 @@ function model(data::Data, optimizer)
 
     @dantzig_wolfe_decomposition(cvrp, dec, VehicleTypes)
 
-    # Naive pricing problem to compute routes
-    id(c, d) = 1000 * c + d
+    ########################################################################################
+    #  Pricing Callback                                                                    #
+    ########################################################################################
+    id(c, d) = 10000 * c + d
     nodes_to_desc = Tuple{Int, Int}[]
     desc_to_node = Dict{Int, Int}()
-    push!(nodes_to_desc, (1, capacity(data)))
-    for c in C, d in capacity(data):-1:demand(data, c)
+    push!(nodes_to_desc, (1, Q))
+    for c in C, d in Q:-1:demand(data, c)
         push!(nodes_to_desc, (c, d))
         desc_to_node[id(c, d)] = length(nodes_to_desc)
     end
-    push!(nodes_to_desc, (1, capacity(data)))
+    push!(nodes_to_desc, (1, Q))
     
     graph = SimpleDiGraph(length(nodes_to_desc))
     source = 1
     target = length(nodes_to_desc)
-    for c in C, d in capacity(data):-1:demand(data, c)
+    for c in C, d in Q:-1:demand(data, c)
         tail = desc_to_node[id(c, d)]
-        if d == capacity(data)
+        if d == Q
             add_edge!(graph, source, tail)
         end
         for c2 in C
@@ -88,6 +91,54 @@ function model(data::Data, optimizer)
         MOI.submit(cvrp, BD.PricingSolution(cbdata), pstate.dists[target], solvars, solvals)
     end
 
+    ########################################################################################
+    #  Rounded Capacity Cuts                                                               #
+    ########################################################################################
+    nbnodes = length(C) + 1
+    #sepgraph = complete_graph(nbnodes)
+
+    sep = Model(GLPK.Optimizer)
+    @variable(sep, w[e in E] >= 0)
+    @variable(sep, y[i in 1:nbnodes], Bin)
+    @variable(sep, M >= 0, Int)
+    @constraint(sep,cut1[e in E], w[e] >= y[e[1]] - y[e[2]])
+    @constraint(sep, cut2[e in E], w[e] >= y[e[2]] - y[e[1]])
+    @constraint(sep, dem, sum(demand(data,c) * y[c] for c in C) >= M * Q + 1)
+    @constraint(sep, fix, y[1] == 0)
+
+    function rounded_capacity_cuts(cbdata)
+        distmx = zeros(Float64, nbnodes, nbnodes)
+        for (i,j) in E
+            val = callback_value(cbdata, x[1, (i,j)])
+            distmx[i,j] = val
+            distmx[j,i] = val
+        end
+
+        Mub = ceil(totaldemand(data)/Q) - 1
+        @objective(sep, Min, sum(distmx[e...] * w[e] for e in E))
+        for m in 1:Mub
+            JuMP.fix(M, m, force = true)
+            optimize!(sep)
+
+            val = objective_value(sep)
+            Ecut = Tuple{Int,Int}[]
+            if val <= 2*(m + 1)
+                for e in E
+                    if value(w[e]) ≈ 1.0
+                        push!(Ecut, e)
+                    end
+                end
+                rcc = @build_constraint(sum(x[1,e] for e in Ecut) >= 2*(m+1))
+                MOI.submit(cvrp, MOI.UserCut(cbdata), rcc)
+            end
+        end
+        return
+    end
+    MOI.set(cvrp, MOI.UserCutCallback(), rounded_capacity_cuts)
+  
+    ########################################################################################
+    #  Subproblems multiplicity                                                            #
+    ########################################################################################
     subproblems = getsubproblems(dec)
     # only one subproblem
     specify!(subproblems[1], lower_multiplicity = 0, upper_multiplicity = 20, solver = route_pricing_callback)

@@ -83,6 +83,12 @@ git-tree-sha1 = "4c4d727f1b7e0092134fabfab6396b8945c1ea5b"
 uuid = "f6369f11-7733-5829-9624-2563aa707210"
 version = "0.10.3"
 
+[[GLPK]]
+deps = ["BinaryProvider", "Libdl", "LinQuadOptInterface", "SparseArrays"]
+git-tree-sha1 = "b12093a67c3007b69d5403625d1920d59c16ac61"
+uuid = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
+version = "0.10.0"
+
 [[Inflate]]
 git-tree-sha1 = "f5fc07d4e706b84f72d54eedcc1c13d92fb0871c"
 uuid = "d25df0c9-e2be-5dd7-82c8-3ad0b3e990b9"
@@ -110,6 +116,12 @@ deps = ["ArnoldiMethod", "DataStructures", "Distributed", "Inflate", "LinearAlge
 git-tree-sha1 = "a0d4bcea4b9c056da143a5ded3c2b7f7740c2d41"
 uuid = "093fc24a-ae57-5d10-9952-331d41423f4d"
 version = "1.3.0"
+
+[[LinQuadOptInterface]]
+deps = ["Compat", "MathOptInterface"]
+git-tree-sha1 = "d6692a09d0424e34c884cd819b8ed47943eefc20"
+uuid = "f8899e07-120b-5979-ab1d-7b97bb9e1a48"
+version = "0.6.0"
 
 [[LinearAlgebra]]
 deps = ["Libdl"]

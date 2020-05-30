@@ -2,6 +2,7 @@ struct Data
     locations::Vector{Pair{Int, Int}} # first is depot
     demands::Vector{Int}
     capacity::Int
+    totaldemand::Int
 end
 
 function data(filename::AbstractString)
@@ -30,7 +31,8 @@ function data(filename::AbstractString)
             end
         end
     end
-    return Data(coords, demands, capacity)
+    totaldemand = sum(demands)
+    return Data(coords, demands, capacity, totaldemand)
 end
 
 function instance_edges(data::Data)
@@ -65,3 +67,4 @@ end
 customers(data::Data) = 2:length(data.locations)
 demand(data::Data, c) = data.demands[c]
 capacity(data::Data) = data.capacity
+totaldemand(data::Data) = data.totaldemand
