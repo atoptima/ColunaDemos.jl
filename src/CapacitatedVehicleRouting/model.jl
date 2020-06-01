@@ -12,6 +12,20 @@ function model(data::Data, optimizer)
     @constraint(cvrp, cov[c in C],
         sum(x[v, e] for e in incidents(data, c), v in VehicleTypes) == 2
     )
+    @constraint(cvrp, lbveh, sum(x[1, (1, i)] for i in C) >= 2 * ceil(totaldemand(data) / Q))
+
+    # routes = []
+    # push!(routes, [21 31 19 17 13 7 26] .+ 1)
+    # push!(routes, [12 1 16 30] .+ 1)
+    # push!(routes, [27 24] .+ 1)
+    # push!(routes, [29 18 8 9 22 15 10 25 5 20] .+ 1)
+    # push!(routes, [14 28 11 4 23 3 2 6] .+ 1)
+    # for r in routes
+    #     for i in 2:length(r)
+    #         e = (r[i-1] < r[i]) ? (r[i-1], r[i]) : (r[i], r[i-1])
+    #         @constraint(cvrp, x[1, e] == 1.0)
+    #     end
+    # end
 
     @objective(cvrp, Min, sum(dist(data, e) * x[v, e] for v in VehicleTypes, e in E))
 
@@ -101,7 +115,7 @@ function model(data::Data, optimizer)
     @variable(sep, w[e in E] >= 0)
     @variable(sep, y[i in 1:nbnodes], Bin)
     @variable(sep, M >= 0, Int)
-    @constraint(sep,cut1[e in E], w[e] >= y[e[1]] - y[e[2]])
+    @constraint(sep, cut1[e in E], w[e] >= y[e[1]] - y[e[2]])
     @constraint(sep, cut2[e in E], w[e] >= y[e[2]] - y[e[1]])
     @constraint(sep, dem, sum(demand(data,c) * y[c] for c in C) >= M * Q + 1)
     @constraint(sep, fix, y[1] == 0)
@@ -119,10 +133,9 @@ function model(data::Data, optimizer)
         for m in 1:Mub
             JuMP.fix(M, m, force = true)
             optimize!(sep)
-
             val = objective_value(sep)
             Ecut = Tuple{Int,Int}[]
-            if val <= 2*(m + 1)
+            if val < 2*(m + 1) - 1e-6
                 for e in E
                     if value(w[e]) ≈ 1.0
                         push!(Ecut, e)
