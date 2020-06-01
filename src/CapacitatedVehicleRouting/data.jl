@@ -61,7 +61,7 @@ function dist(data, e)
     x2 = data.locations[j].first
     y1 = data.locations[i].second
     y2 = data.locations[j].second
-    return round(sqrt((x1 - y1)^2 + (x2 - y2)^2))
+    return round(sqrt((x1 - x2)^2 + (y1 - y2)^2))
 end
 
 customers(data::Data) = 2:length(data.locations)
