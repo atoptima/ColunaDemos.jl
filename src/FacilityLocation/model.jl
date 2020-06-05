@@ -1,4 +1,4 @@
-function model(data::DataFl, , optimizer)
+function model(data::DataFl, optimizer)
     fl = BlockModel(optimizer, bridge_constraints = false)
 
     
