@@ -1,5 +1,5 @@
 function model(data::DataSmMiLs, optimizer)
-    mils = BlockModel(optimizer, bridge_constraints = false)
+    mils = BlockModel(optimizer)
 
     @axis(S, 1:data.nbscenarios)
 

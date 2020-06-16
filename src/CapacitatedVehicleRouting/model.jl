@@ -1,5 +1,5 @@
 function model(data::Data, optimizer)
-    cvrp = BlockModel(optimizer, bridge_constraints = false)
+    cvrp = BlockModel(optimizer)
 
     @axis(VehicleTypes, [1])
 

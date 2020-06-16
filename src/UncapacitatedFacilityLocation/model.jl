@@ -1,5 +1,5 @@
 function model(data::Data, optimizer)
-    ufl = BlockModel(optimizer, bridge_constraints = false)
+    ufl = BlockModel(optimizer)
 
     @axis(F, data.facilities)
 

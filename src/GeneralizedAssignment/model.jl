@@ -1,5 +1,5 @@
 function model(data::Data, optimizer)
-    gap = BlockModel(optimizer, bridge_constraints = false)
+    gap = BlockModel(optimizer)
 
     @axis(M, data.machines)
 
@@ -21,7 +21,7 @@ function model(data::Data, optimizer)
 end
 
 function model_with_penalties(data::Data, optimizer)
-    gap = BlockModel(optimizer, bridge_constraints = false)
+    gap = BlockModel(optimizer)
 
     penalties = Float64[sum(data.cost[j,m] for m in data.machines) * 0.7 for j in data.jobs]
     penalties ./= length(data.machines)
@@ -53,7 +53,7 @@ function model_with_penalties(data::Data, optimizer)
 end
 
 function model_with_penalty(data::Data, optimizer)
-    gap = BlockModel(optimizer, bridge_constraints = false)
+    gap = BlockModel(optimizer)
 
     penalty = 10000
 
@@ -79,7 +79,7 @@ function model_with_penalty(data::Data, optimizer)
 end
 
 function model_max(data::Data, optimizer)
-    gap = BlockModel(optimizer, bridge_constraints = false)
+    gap = BlockModel(optimizer)
 
     rewards = data.cost
     capacities = data.capacity
@@ -102,7 +102,7 @@ function model_max(data::Data, optimizer)
 end
 
 function model_without_knp_constraints(data::Data, optimizer)
-    gap = BlockModel(optimizer, bridge_constraints = false)
+    gap = BlockModel(optimizer)
 
     @axis(M, data.machines)
 
