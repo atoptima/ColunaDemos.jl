@@ -1,5 +1,12 @@
-function model(data::Data, optimizer, bridge_constraints = true)
-    gap = BlockModel(optimizer, bridge_constraints = bridge_constraints)
+function model(data::Data, optimizer, use_direct_model = true)
+    gap = BlockModel(optimizer)
+    if use_direct_model
+        gap = JuMP.direct_model(optimizer.optimizer_constructor())
+        for (param, val) in optimizer.params
+            set_optimizer_attribute(gap, param, val)
+        end
+        JuMP.set_optimize_hook(gap, BlockDecomposition.optimize!)
+    end
 
     @axis(M, data.machines)
 
