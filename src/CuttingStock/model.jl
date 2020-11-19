@@ -1,5 +1,5 @@
-function model(d::Data, optimizer)
-    csp = BlockModel(optimizer)
+function model(d::Data, optimizer, use_direct_model = true)
+    csp = BlockModel(optimizer, direct_model = use_direct_model)
 
     xub = [ min(d.orders[o].demand, floor(d.stocksheetswidth/d.orders[o].width))
             for o in 1:d.nborders ]

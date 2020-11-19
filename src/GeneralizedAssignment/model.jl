@@ -1,12 +1,5 @@
 function model(data::Data, optimizer, use_direct_model = true)
-    gap = BlockModel(optimizer)
-    if use_direct_model
-        gap = JuMP.direct_model(optimizer.optimizer_constructor())
-        for (param, val) in optimizer.params
-            set_optimizer_attribute(gap, param, val)
-        end
-        JuMP.set_optimize_hook(gap, BlockDecomposition.optimize!)
-    end
+    gap = BlockModel(optimizer, direct_model = use_direct_model)
 
     @axis(M, data.machines)
 
@@ -27,8 +20,8 @@ function model(data::Data, optimizer, use_direct_model = true)
     return gap, x, dec
 end
 
-function model_with_penalties(data::Data, optimizer)
-    gap = BlockModel(optimizer)
+function model_with_penalties(data::Data, optimizer, use_direct_model = true)
+    gap = BlockModel(optimizer, direct_model = use_direct_model)
 
     penalties = Float64[sum(data.cost[j,m] for m in data.machines) * 0.7 for j in data.jobs]
     penalties ./= length(data.machines)
@@ -59,8 +52,8 @@ function model_with_penalties(data::Data, optimizer)
     return gap, x, y, dec
 end
 
-function model_with_penalty(data::Data, optimizer)
-    gap = BlockModel(optimizer)
+function model_with_penalty(data::Data, optimizer, use_direct_model = true)
+    gap = BlockModel(optimizer, direct_model = use_direct_model)
 
     penalty = 10000
 
@@ -85,8 +78,8 @@ function model_with_penalty(data::Data, optimizer)
     return gap, x, y, dec
 end
 
-function model_max(data::Data, optimizer)
-    gap = BlockModel(optimizer)
+function model_max(data::Data, optimizer, use_direct_model = true)
+    gap = BlockModel(optimizer, direct_model = use_direct_model)
 
     rewards = data.cost
     capacities = data.capacity
@@ -108,8 +101,8 @@ function model_max(data::Data, optimizer)
     return gap, x, dec
 end
 
-function max_model_with_subcontracts(data::Data, optimizer)
-    gap = BlockModel(optimizer, bridge_constraints = false)
+function max_model_with_subcontracts(data::Data, optimizer, use_direct_model = true)
+    gap = BlockModel(optimizer, direct_model = use_direct_model)
 
     rewards = data.cost
     sub_rewards = Float64[sum(rewards[j,m] for m in data.machines) * 0.5 for j in data.jobs]
@@ -142,8 +135,8 @@ function max_model_with_subcontracts(data::Data, optimizer)
 end
 
 
-function model_without_knp_constraints(data::Data, optimizer)
-    gap = BlockModel(optimizer)
+function model_without_knp_constraints(data::Data, optimizer, use_direct_model = true)
+    gap = BlockModel(optimizer, direct_model = use_direct_model)
 
     @axis(M, data.machines)
 
