@@ -1,5 +1,5 @@
-function model(data::DataSmMiLs, optimizer)
-    mils = BlockModel(optimizer)
+function model(data::DataSmMiLs, optimizer, use_direct_model = true)
+    mils = BlockModel(optimizer, direct_model = use_direct_model)
 
     @axis(S, 1:data.nbscenarios)
 
