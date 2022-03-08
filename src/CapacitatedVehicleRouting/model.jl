@@ -111,7 +111,7 @@ function model(data::Data, optimizer)
     nbnodes = length(C) + 1
     #sepgraph = complete_graph(nbnodes)
 
-    sep = Model(GLPK.Optimizer)
+    sep = Model(HiGHS.Optimizer)
     @variable(sep, w[e in E] >= 0)
     @variable(sep, y[i in 1:nbnodes], Bin)
     @variable(sep, M >= 0, Int)
