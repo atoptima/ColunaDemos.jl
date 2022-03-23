@@ -103,6 +103,7 @@ function model(data::Data, optimizer)
 
         # Submit the solution to the subproblem to Coluna
         MOI.submit(cvrp, BD.PricingSolution(cbdata), pstate.dists[target], solvars, solvals)
+        MOI.submit(cvrp, BD.PricingDualBound(cbdata), pstate.dists[target])
     end
 
     ########################################################################################
