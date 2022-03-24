@@ -4,7 +4,7 @@ function model(inst::Data, optimizer)
 
     bigM = compute_bigM_coeffs(inst)
 
-    clsp = BlockModel(optimizer, bridge_constraints=false)
+    clsp = BlockModel(optimizer)
 
     @axis(I, 1:inst.numItems)
     T = 1:inst.numPer
