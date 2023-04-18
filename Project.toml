@@ -12,4 +12,4 @@ LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 
 [compat]
-BlockDecomposition = "1.6"
+BlockDecomposition = "1.13"
